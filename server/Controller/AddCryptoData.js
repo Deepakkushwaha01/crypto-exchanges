@@ -4,8 +4,10 @@ import Cryptos from "../Model/CryptoModel.js";
 export const GetData=async(req,res)=>{
 
 const search=req.query.search;
+const page = req.query.page || 1;
 console.log(search)
 let query={}
+const ITEM_PER_PAGE = 10;
 
 if(search.length>0){
     query["item.name"]={$regex:search,$options:"i"}
@@ -13,12 +15,20 @@ if(search.length>0){
 
 
     try {
-        
+        let skip = (page - 1) * ITEM_PER_PAGE;
 
-const data=await Cryptos.find(query).limit(10);
+        const count = await Cryptos.countDocuments(query);
+
+const data=await Cryptos.find(query).limit(ITEM_PER_PAGE).skip(skip);
+
+const pageCount = Math.ceil(count / ITEM_PER_PAGE);
 
 res.send({
     success:true,
+    Pagination: {
+        count,
+        pageCount,
+      },
     data
 })
 

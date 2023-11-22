@@ -35,9 +35,9 @@ export const adddatacrpto=async(data)=>{     // Add Data to Database
 }   
 
 
-export const CallData=async(search)=>{      //Call Data from Database
+export const CallData=async(search,page)=>{      //Call Data from Database
     try {
-        const res=await axios.get(`${import.meta.env.VITE_BACKEND}/getData?search=${search}`);
+        const res=await axios.get(`${import.meta.env.VITE_BACKEND}/getData?search=${search}&page=${page}`);
         return res;
     } catch (error) {
         console.log(error)

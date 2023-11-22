@@ -2,6 +2,10 @@ import { useEffect, useState } from "react";
 import Search from "./Components/Search/Search"
 import { CallData, adddatacrpto, callCoinApi, callCoinIconApi } from "./Services/Api/ApiCall";
 import { FormatNum } from "./Components/FormatNumber/FormatNumber";
+import Pagination from "./Components/Pagination/Pagination";
+import 'bootstrap/dist/css/bootstrap.min.css';
+import Paginations from "./Components/Pagination/Pagination";
+
 
 
 function App() {
@@ -81,24 +85,27 @@ useEffect(()=>{
 /* ------------------------------------------------- Get Data From Database ----------------------------------------------------- */
 const [values,newvalues]=useState(null);
 const[search,newsearch]=useState('');
+const [pagecount,setpagecount]=useState(1);
+const [page,setpage]=useState(1);
+
 
 const getDataToDatabase=async()=>{
 
-const res=await CallData(search);
+const res=await CallData(search,page);
 
 if(res.data.success==true){
   newvalues(res.data.data);
-
+  setpagecount(res.data.Pagination.pageCount)
 }
 
 }
 
 useEffect(()=>{
   getDataToDatabase();
-},[search])
+},[search,page])
 
 
-console.log(search)
+console.log(pagecount)
 /* ------------------------------------------------------------------------------------------------------------------------------ */
   return (
     <>
@@ -112,7 +119,7 @@ console.log(search)
  <Search searchs={{search,newsearch}}/>
 </div>
 
-<div>
+<div className="px-[4.5rem] my-[1rem]">
   <button onClick={()=>callexternalApi()} 
   className="bg-sky-500 px-[1.5rem] py-[0.5rem] rounded-xl text-white font-semibold text-lg tracking-wide">Update Data</button>
 </div>
@@ -135,16 +142,16 @@ console.log(search)
          
                 <div className="flex  justify-center w-full ">
                 <div className="flex gap-[15px] py-[0.5rem]">
-                <h2>{index+1}</h2>
+             {/*    <h2>{index+1}</h2> */}
                 <div className="flex gap-[10px]"> 
                  {val.url && <div className="grid place-items-center"><img src={val.url.url?val.url.url:''} alt="" className="w-[60%]" /></div>}
-<div>{ val.item &&  <h2 className="text-[#06285c] font-semibold">{val.item.name}</h2>}</div>
+<div>{ val.item &&  <h2 className="text-[#06285c] font-semibold">{val.item.name?val.item.name:val.item.exchange_id}</h2>}</div>
                 </div>
 
                 </div></div>
                 }</td>
 
-              <td className="w-[50vh] ">{val.item && <h1 className="text-[#06285c] font-bold">{FormatNum(val.item.volume_1day_usd)}</h1>}</td>
+              <td className="w-[50vh] ">{val.item && <h1 className="text-[#06285c] font-bold">&#36;{FormatNum(val.item.volume_1day_usd)}</h1>}</td>
             </tr>
             })
           }
@@ -153,6 +160,11 @@ console.log(search)
         </tbody>
 
   </table>
+</div>
+
+
+<div className="m-[2rem] grid place-items-end">
+  <Paginations pagecount={pagecount} pages={{page,setpage}}/>
 </div>
 
     </div>
