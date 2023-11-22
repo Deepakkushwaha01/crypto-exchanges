@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import Search from "./Components/Search/Search"
-import { adddatacrpto, callCoinApi, callCoinIconApi } from "./Services/Api/ApiCall";
+import { CallData, adddatacrpto, callCoinApi, callCoinIconApi } from "./Services/Api/ApiCall";
 
 
 function App() {
@@ -11,6 +11,20 @@ const[exchangeIcon,setexchangeIcon]=useState(null);
 /* ----------------------------------------------------- Get Api From External ------------------------------------------------- */
 
 const callexternalApi=async()=>{
+
+  const res=await callCoinApi();  // call api from coinAPI.io
+  if(res.data){
+   setexchange(res.data)      //set values to state of exchange data 
+  }
+ 
+  const resicon=await callCoinIconApi()
+  if(resicon.data){
+   setexchangeIcon(resicon.data)             //set values to state  of exchange icon data
+  }
+
+
+/* ---------------------------- IT compare and set data with matching exchange_id ------------------------------------------- */
+
 if(exchange && exchangeIcon){
 
   exchange.forEach((val)=>{
@@ -27,40 +41,28 @@ if(match){
 
 }else {
   if(!setall.includes(setall.find(x=>x.item.exchange_id==val.exchange_id))){
-    newsetall(per=>[...per,{item:val,url:{}}])
+
+    newsetall(per=>[...per,{item:val,url:{}}])         // those who have not url are set here
   }
 }
 
 })
 }
+/* ------------------------------------------------ End Up of matching exchange_id ----------------------------------------- */
 }
-
-console.log(setall)
-
-const getval=async()=>{
-  const res=await callCoinApi();  // call api from coinAPI.io
-  if(res.data){
-   setexchange(res.data)      //set values to state  
-  }
  
-  const resicon=await callCoinIconApi()
-  if(resicon.data){
-   setexchangeIcon(resicon.data)             //set values to state  
-  }
-}
-
-
- useEffect(()=>{
-  getval();
-},[]) 
 /* ----------------------------------------------------------------------------------------------------------------------------- */
+
+
+
+
 
 
 /* ------------------------------------------------------- Send Data To DataBase ----------------------------------------------- */
 
 const addBackendData=async()=>{
   
-setall.length>0 && setall.forEach((val)=>{
+setall.length>0 && setall.forEach((val)=>{    // Sending one by one data to protect from server error , array size is large
   adddatacrpto(val);
 })
  
@@ -72,15 +74,25 @@ useEffect(()=>{
 
 /* ------------------------------------------------------------------------------------------------------------------------------ */
 
+
+
+
 /* ------------------------------------------------- Get Data From Database ----------------------------------------------------- */
+const [values,newvalues]=useState(null);
 
 const getDataToDatabase=async()=>{
+const res=await CallData();
+if(res.data.success==true){
+  newvalues(res.data.data);
+}
 
 }
 
 useEffect(()=>{
   getDataToDatabase();
 },[])
+
+
 
 /* ------------------------------------------------------------------------------------------------------------------------------ */
   return (
@@ -98,6 +110,43 @@ useEffect(()=>{
 <div>
   <button onClick={()=>callexternalApi()} 
   className="bg-sky-500 px-[1.5rem] py-[0.5rem] rounded-xl text-white font-semibold text-lg tracking-wide">Update Data</button>
+</div>
+
+
+<div className="w-full flex justify-center">
+  <table className="w-full h-full  text-center">
+  <thead>
+          <tr>
+            <th>exchanges</th>
+            <th>24th trade volume</th>
+          </tr>
+        </thead>
+  
+   <tbody >
+          {
+            values && values.map((val,index)=>{
+              return  <tr key={index} className="border-t ">
+              <td>{
+                <div className="flex justify-center w-full ">
+                  <div className="min-w-[10rem] w-auto ">
+                <div className="flex gap-[15px] py-[0.5rem]">
+                <h2>{index+1}</h2>
+                <div className="flex gap-[10px]"> 
+                  <div className="grid place-items-center"><img src={val.url.url?val.url.url:''} alt="" className="w-[60%]" /></div>
+<div>{ val.item &&  <h2>{val.item.exchange_id}</h2>}</div>
+                </div>
+
+                </div> </div></div>
+                }</td>
+              <td>{val.item && <h1>{val.item.volume_1day_usd}</h1>}</td>
+            </tr>
+            })
+          }
+         
+   
+        </tbody>
+
+  </table>
 </div>
 
     </div>

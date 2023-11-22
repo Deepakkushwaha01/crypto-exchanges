@@ -1,6 +1,25 @@
 import Cryptos from "../Model/CryptoModel.js";
 
 
+export const GetData=async(req,res)=>{
+    try {
+        
+
+const data=await Cryptos.find({}).limit(10);
+
+res.send({
+    success:true,
+    data
+})
+
+    } catch (error) {
+        console.log(error)
+    }
+}
+
+
+
+
 export const AddData=async(req,res)=>{
 
 try {
