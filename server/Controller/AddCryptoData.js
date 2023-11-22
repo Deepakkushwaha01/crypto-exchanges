@@ -2,10 +2,20 @@ import Cryptos from "../Model/CryptoModel.js";
 
 
 export const GetData=async(req,res)=>{
+
+const search=req.query.search;
+console.log(search)
+let query={}
+
+if(search.length>0){
+    query["item.name"]={$regex:search,$options:"i"}
+    }
+
+
     try {
         
 
-const data=await Cryptos.find({}).limit(10);
+const data=await Cryptos.find(query).limit(10);
 
 res.send({
     success:true,

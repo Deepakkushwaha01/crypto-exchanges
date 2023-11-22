@@ -80,21 +80,25 @@ useEffect(()=>{
 
 /* ------------------------------------------------- Get Data From Database ----------------------------------------------------- */
 const [values,newvalues]=useState(null);
+const[search,newsearch]=useState('');
 
 const getDataToDatabase=async()=>{
-const res=await CallData();
+
+const res=await CallData(search);
+
 if(res.data.success==true){
   newvalues(res.data.data);
+
 }
 
 }
 
 useEffect(()=>{
   getDataToDatabase();
-},[])
+},[search])
 
 
-
+console.log(search)
 /* ------------------------------------------------------------------------------------------------------------------------------ */
   return (
     <>
@@ -105,7 +109,7 @@ useEffect(()=>{
       </div>
 
 <div>
- <Search/>
+ <Search searchs={{search,newsearch}}/>
 </div>
 
 <div>
@@ -133,7 +137,7 @@ useEffect(()=>{
                 <div className="flex gap-[15px] py-[0.5rem]">
                 <h2>{index+1}</h2>
                 <div className="flex gap-[10px]"> 
-                  <div className="grid place-items-center"><img src={val.url.url?val.url.url:''} alt="" className="w-[60%]" /></div>
+                 {val.url && <div className="grid place-items-center"><img src={val.url.url?val.url.url:''} alt="" className="w-[60%]" /></div>}
 <div>{ val.item &&  <h2 className="text-[#06285c] font-semibold">{val.item.name}</h2>}</div>
                 </div>
 

@@ -2,8 +2,11 @@ import { IconButton } from '@mui/material'
 import React from 'react'
 import SearchIcon from '@mui/icons-material/Search';
 import BusinessIcon from '@mui/icons-material/Business';
+import CloseIcon from '@mui/icons-material/Close';
 
-const Search = () => {
+const Search = ({searchs}) => {
+
+  const {search,newsearch}=searchs;
   return (
     <div className='grid place-items-center'>
       
@@ -13,12 +16,12 @@ const Search = () => {
 <BusinessIcon/>
 
 </div>
-<input type="text" name="" id="" className=' w-full h-full px-4 outline-none' />
+<input type="text" name="" id="" className=' w-full h-full px-4 outline-none' value={search} onChange={(e)=>newsearch(e.target.value)}/>
 
 
 <div>
     <IconButton>
-<SearchIcon/>
+{search==""?<SearchIcon/>:<CloseIcon onClick={()=>newsearch("")}/> }
     </IconButton>
 </div>
 
