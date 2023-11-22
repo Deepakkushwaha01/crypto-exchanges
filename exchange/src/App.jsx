@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import Search from "./Components/Search/Search"
 import { CallData, adddatacrpto, callCoinApi, callCoinIconApi } from "./Services/Api/ApiCall";
+import { FormatNum } from "./Components/FormatNumber/FormatNumber";
 
 
 function App() {
@@ -62,7 +63,7 @@ if(match){
 
 const addBackendData=async()=>{
   
-setall.length>0 && setall.forEach((val)=>{    // Sending one by one data to protect from server error , array size is large
+setall.length>0 && setall.forEach((val)=>{    // Sending one by one data to protect from server error , Request Entity Too Large
   adddatacrpto(val);
 })
  
@@ -126,19 +127,20 @@ useEffect(()=>{
           {
             values && values.map((val,index)=>{
               return  <tr key={index} className="border-t ">
-              <td>{
-                <div className="flex justify-center w-full ">
-                  <div className="min-w-[10rem] w-auto ">
+              <td className=" w-[50vh]">{
+         
+                <div className="flex  justify-center w-full ">
                 <div className="flex gap-[15px] py-[0.5rem]">
                 <h2>{index+1}</h2>
                 <div className="flex gap-[10px]"> 
                   <div className="grid place-items-center"><img src={val.url.url?val.url.url:''} alt="" className="w-[60%]" /></div>
-<div>{ val.item &&  <h2>{val.item.exchange_id}</h2>}</div>
+<div>{ val.item &&  <h2 className="text-[#06285c] font-semibold">{val.item.name}</h2>}</div>
                 </div>
 
-                </div> </div></div>
+                </div></div>
                 }</td>
-              <td>{val.item && <h1>{val.item.volume_1day_usd}</h1>}</td>
+
+              <td className="w-[50vh] ">{val.item && <h1 className="text-[#06285c] font-bold">{FormatNum(val.item.volume_1day_usd)}</h1>}</td>
             </tr>
             })
           }
